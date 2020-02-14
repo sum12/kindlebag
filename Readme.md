@@ -20,7 +20,8 @@ install:
 -------
 
 
-###Option1
+#### Option1
+
 Jailbroken kindle gives you ssh access to kindle
 copy the binary and config.json somewhere on kindle using ssh
 execute command
@@ -29,7 +30,8 @@ execute command
 ```
 
 
-###Option2
+#### Option2
+
 Use this IF you know what are KUAL exteionsions.
 use the KUALextensions directory for sample.
 - copy its contents (using ssh) to /mnt/us/extensions/kindlebag
