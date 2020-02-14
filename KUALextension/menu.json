@@ -1,0 +1,17 @@
+{
+	"items": [{
+		"name": "Kindlebag",
+		"priority": -1,
+		"items": [{
+			"name": "Sync",
+			"action": "./bin/kindlebag.sh",
+			"params": "",
+			"exitmenu": false,
+			"checked": false,
+			"refresh": false,
+			"status": false,
+			"internal": ""
+		}]
+	}]
+}
+
