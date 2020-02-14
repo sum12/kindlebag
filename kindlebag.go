@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	"fmt"
 	"log"
 	"os"
 	"path"
@@ -25,24 +24,24 @@ var outfolder = flag.String("outfolder", "out", "file name of config JSON file")
 func handleFlags() {
 	flag.Parse()
 	if *debug && len(flag.Args()) > 0 {
-		log.Printf("handleFlags: non-flag args=%v", strings.Join(flag.Args(), " "))
+		log.Println("handleFlags: non-flag args=%v", strings.Join(flag.Args(), " "))
 	}
 	// version first, because it directly exits here
 	if *v {
-		fmt.Printf("version %v\n", version)
+		log.Println("version %v\n", version)
 		os.Exit(0)
 	}
 	// test verbose before debug because debug implies verbose
 	if *verbose && !*debug && !*debugDebug {
-		log.Printf("verbose mode")
+		log.Println("verbose mode")
 	}
 	if *debug && !*debugDebug {
-		log.Printf("handleFlags: debug mode")
+		log.Println("handleFlags: debug mode")
 		// debug implies verbose
 		*verbose = true
 	}
 	if *debugDebug {
-		log.Printf("handleFlags: debug² mode")
+		log.Println("handleFlags: debug mode")
 		// debugDebug implies debug
 		*debug = true
 		// and debug implies verbose
@@ -55,7 +54,7 @@ func GetReaderEntries() ([]wallabago.Item, error) {
 	perPage := -1
 	e, err := wallabago.GetEntries(wallabago.APICall, -1, -1, "", "", page, perPage, "toreader")
 	if err != nil {
-		log.Println("GetAllEntries: first GetEntries call failed", err)
+		log.Println("GetAllEntries: call failed", err)
 		return nil, err
 	}
 	allEntries := e.Embedded.Items
@@ -85,31 +84,46 @@ func main() {
 	}
 	err := wallabago.ReadConfig(*configJSON)
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
 		os.Exit(1)
 	}
 	items, err := GetReaderEntries()
 	if err != nil {
-		panic(err)
+		log.Fatal(err)
+	}
+	if *verbose {
+		log.Println("Got", len(items), "entries")
 	}
 	for i := 0; i < len(items); i++ {
-		exp, err := wallabago.ExportEntry(wallabago.APICall, items[i].ID, "mobi")
-		if err != nil {
-			panic(err)
-		}
 		fname := strings.ReplaceAll(path.Base(items[i].Title), ":", "")
+		if *verbose {
+			log.Println("Getting", i+1, fname)
+		}
+		export, err := wallabago.ExportEntry(wallabago.APICall, items[i].ID, "mobi")
+		if err != nil {
+			log.Fatal(err)
+		}
 		output := filepath.Join(*outfolder, fname+".mobi")
+		if *verbose {
+			log.Println("Creating", i+1, fname)
+		}
 		out, err := os.Create(output)
 		if err != nil {
-			fmt.Errorf("failed to create output file: %v", err)
+			log.Println("failed to create output file:", err)
 		}
 		defer out.Close()
-		n, err := out.Write(exp)
-		if err != nil {
-			fmt.Errorf("can't write file: %v", err)
+		if *verbose {
+			log.Println("Saving", i+1, fname)
 		}
-		if n >= 0 {
-			log.Printf("wrote %d bytes (%s) in file %s", n, uint64(n), output)
+		n, err := out.Write(export)
+		if err != nil {
+			log.Println("can't write file:", err)
+			if n == 0 {
+				log.Println("can't write file, probably output folder is missing: ")
+			}
+		}
+		if n > 0 {
+			log.Println("wrote", n, "bytes in file:", output)
 		}
 	}
 }
