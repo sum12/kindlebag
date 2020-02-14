@@ -19,7 +19,7 @@ var debugDebug = flag.Bool("dd", false, "get even more debug output like data (i
 var v = flag.Bool("v", false, "print version")
 var verbose = flag.Bool("verbose", false, "verbose mode")
 var configJSON = flag.String("config", defaultConfigJSON, "file name of config JSON file")
-var outfolder = flag.String("outfolder", "out", "file name of config JSON file")
+var outfolder = flag.String("outfolder", "", "file name of config JSON file")
 
 func handleFlags() {
 	flag.Parse()
@@ -46,6 +46,9 @@ func handleFlags() {
 		*debug = true
 		// and debug implies verbose
 		*verbose = true
+	}
+	if *outfolder == "" {
+		log.Fatal("outfolder: output folder path is required")
 	}
 }
 
