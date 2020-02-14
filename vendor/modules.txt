@@ -1,0 +1,2 @@
+# github.com/Strubbl/wallabago v5.1.0+incompatible
+github.com/Strubbl/wallabago
