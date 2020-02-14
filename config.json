@@ -1,7 +1,0 @@
-{
-  "WallabagURL": "https://wallabag.example.com.de",
-  "ClientId": "you get it by creating an application client",
-  "ClientSecret": "you will also get this secret",
-  "UserName": "username",
-  "UserPassword": "password"
-}
